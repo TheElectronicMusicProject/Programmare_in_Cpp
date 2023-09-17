@@ -55,7 +55,7 @@ main ()
  * @return  Nothing.
  */
 inline void
-parity::put()
+parity::put ()
 {
     ++n_calls;
     assert(n_calls <= UINT32_MAX);
@@ -69,7 +69,7 @@ parity::put()
  * @return  true if the number of calls is even, false if it's odd.
  */
 inline bool
-parity::test()
+parity::test ()
 {
     return (0 == (n_calls % 2) ? true : false); 
 }   /* parity::test() */
@@ -80,7 +80,7 @@ parity::test()
  * The class variabile `n_calls` is initialized to zero.
  * @return  Always nothing.
  */
-parity::parity()
+parity::parity ()
 {
     n_calls = 0;
 }   /* parity::parity() */
