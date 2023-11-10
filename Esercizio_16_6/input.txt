@@ -1,0 +1,8 @@
+Configuration file V1.0
+Filippo         Name
+Graziani        Surname
+Bonfanti        Address
+96              Number
+Bologna         City
+Bo              Province
+Italia          State
