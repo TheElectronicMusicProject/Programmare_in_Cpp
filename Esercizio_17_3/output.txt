@@ -1,0 +1,1 @@
+There are: 109 elements and their sum is 35194
