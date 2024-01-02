@@ -6,43 +6,208 @@
  */
 
 #include <iostream>
+#include <ctype.h>
+#include <string>
 
 #define MAX(num_a, num_b)   (((num_a) > (num_b)) ? (num_a) : (num_b))
 
-static unsigned int factorization(unsigned int num,
-                                  unsigned int * p_list[2],
-                                  unsigned int &p_n_elem);
-static bool is_prime_number(unsigned int num);
-static void print_factorization(unsigned int * p_array[2], unsigned int size);
-static unsigned int mcm(unsigned int num1, unsigned int num2);
+namespace fract_t
+{
+    class fract_t
+    {
+        public:
+            int num;
+            int den;
+
+            fract_t ()
+            {
+                fraction = "1/1";
+                num = 1;
+                den = 1;
+            }
+
+            fract_t (std::string frac)
+            {
+                if (true == check_if_frac(frac))
+                {
+                    fraction = frac;
+                }
+                else
+                {
+                    std::cerr << frac << " is not a fraction!\n";
+                    exit(EXIT_FAILURE);
+                }
+
+                int ret = extract_frac(frac, num, den);
+
+                switch (ret)
+                {
+                    case 1:
+                        std::cerr << "Denominator cannot be 0\n";
+                        exit(EXIT_FAILURE);
+                    break;
+                
+                    case 0:
+                        /* Fall through */
+                    default:
+                    break;
+                }
+            }
+
+            fract_t (const fract_t& old_frac)
+            {
+                fraction = old_frac.fraction;
+                num = old_frac.num;
+                den = old_frac.den;
+            }
+
+            ~fract_t()
+            {
+                fraction = "";
+            }
+
+        private:
+            std::string fraction;
+
+            unsigned int factorization(unsigned int num,
+                                       unsigned int * p_list[2],
+                                       unsigned int& p_n_elem);
+            bool is_prime_number(unsigned int num);
+            void print_factorization(unsigned int * p_array[2],
+                                     unsigned int size);
+            unsigned int mcm(unsigned int num1, unsigned int num2);
+            bool check_if_frac(std::string in_str);
+            int extract_frac(std::string in_str, int& num, int& den);
+
+        friend fract_t operator + (const fract_t& oper1, const fract_t& oper2);
+        friend fract_t operator - (const fract_t& oper1, const fract_t& oper2);
+        friend fract_t operator / (const fract_t& oper1, const fract_t& oper2);
+        friend fract_t operator * (const fract_t& oper1, const fract_t& oper2);
+        friend inline std::ostream& operator << (std::ostream& out_file,
+                                                 const fract_t& number);
+    };
+
+    inline fract_t
+    operator + (const fract_t& oper1,
+                const fract_t& oper2)
+    {
+        std::string new_fract = "";
+        fract_t obj;
+        int new_den = obj.mcm(oper1.den, oper2.den);
+        int new_num = (new_den / oper1.den * oper1.num) +
+                      (new_den / oper2.den * oper2.num);
+
+        if (0 == new_num)
+        {
+            new_den = 1;
+        }
+        
+        new_fract = std::to_string(new_num) + "/" + std::to_string(new_den);
+
+        return fract_t(new_fract);
+    }   /* operator + () */
+
+    inline fract_t
+    operator - (const fract_t& oper1,
+                const fract_t& oper2)
+    {
+        std::string new_fract = "";
+        fract_t obj;
+        int new_den = obj.mcm(oper1.den, oper2.den);
+        int new_num = (new_den / oper1.den * oper1.num) -
+                      (new_den / oper2.den * oper2.num);
+
+        if (0 == new_num)
+        {
+            new_den = 1;
+        }
+        
+        new_fract = std::to_string(new_num) + "/" + std::to_string(new_den);
+
+        return fract_t(new_fract);
+    }   /* operator - () */
+
+    inline fract_t
+    operator * (const fract_t& oper1,
+                const fract_t& oper2)
+    {
+        std::string new_fract = "";
+        int new_num(oper1.num * oper2.num);
+        int new_den(oper1.den * oper2.den);
+
+        if (0 == new_num)
+        {
+            new_den = 1;
+        }
+        
+        new_fract = std::to_string(new_num) + "/" + std::to_string(new_den);
+
+        return fract_t(new_fract);
+    }   /* operator * () */
+
+    inline fract_t
+    operator / (const fract_t& oper1,
+                const fract_t& oper2)
+    {
+        std::string new_fract = "";
+        int new_num(oper1.num * oper2.den);
+        int new_den(oper1.den * oper2.num);
+
+        if (0 == new_num)
+        {
+            new_den = 1;
+        }
+        
+        new_fract = std::to_string(new_num) + "/" + std::to_string(new_den);
+
+        return fract_t(new_fract);
+    }   /* operator / () */
+
+    inline std::ostream&
+    operator << (std::ostream& out_file,
+                 const fract_t& number)
+    {
+        std::string str_frac = "";
+        fract_t obj;
+
+        str_frac = std::to_string(number.num) + "/" +
+                   std::to_string(number.den);
+
+        out_file << str_frac;
+
+        return (out_file);
+    }   /* operator << () */
+}
 
 /**
  * @brief   Main function
  * @par     Description
- * Test for the class fixed_pt, printing its values.
+ * Test for the class fract_t, printing its values.
  * @return  Always 0 (success).
  */
 int
 main ()
 {
-    unsigned int val(0);
-#if 0
-    unsigned int * p_array[2] = {NULL, NULL};
-    unsigned int n_elem = 0;
-    unsigned int val = 0;
+    std::string input_str = "";
 
-    val = factorization( 15892, p_array, &n_elem);
+    std::cout << "Insert first number -> ";
+    std::getline(std::cin, input_str);
+    fract_t::fract_t num1(input_str);
 
-    if (0 == val)
-    {
-        print_factorization(p_array, n_elem);
-    }
-#endif
+    std::cout << "Insert second number -> ";
+    std::getline(std::cin, input_str);
+    fract_t::fract_t num2(input_str);
 
-    val = mcm(8895, 9768);
+    fract_t::fract_t num3(num1 + num2);
+    fract_t::fract_t num4(num1 - num2);
+    fract_t::fract_t num5(num1 * num2);
+    fract_t::fract_t num6(num1 / num2);
 
-    std::cout << "MCM(18, 64) = " << val << std::endl;
-    
+    std::cout << num1 << " + " << num2 << " = " << num3 << std::endl;
+    std::cout << num1 << " - " << num2 << " = " << num4 << std::endl;
+    std::cout << num1 << " * " << num2 << " = " << num5 << std::endl;
+    std::cout << num1 << " / " << num2 << " = " << num6 << std::endl;
+
     return (0);
 }   /* main() */
 
@@ -55,8 +220,9 @@ main ()
  * @param[in]   num2    The second integer number.
  * @return  The mcm of the given numbers.
  */
-static unsigned int
-mcm (unsigned int num1, unsigned int num2)
+inline unsigned int
+fract_t::fract_t::mcm (unsigned int num1,
+                       unsigned int num2)
 {
     unsigned int * p_arr1[2] = {NULL, NULL};
     unsigned int * p_arr2[2] = {NULL, NULL};
@@ -66,10 +232,10 @@ mcm (unsigned int num1, unsigned int num2)
 
     factorization(num1, p_arr1, n_elem1);
     factorization(num2, p_arr2, n_elem2);
-
+#if 0
     print_factorization(p_arr1, n_elem1);
     print_factorization(p_arr2, n_elem2);
-
+#endif
     unsigned int idx1(0);
     unsigned int idx2(0);
     unsigned int temp1(0);
@@ -178,7 +344,7 @@ mcm (unsigned int num1, unsigned int num2)
     p_arr2[1] = NULL;
 
     return result;
-}   /* mcm() */
+}   /* fract_t::fract_t::mcm() */
 
 /**
  * @brief   Prints of factorization
@@ -190,8 +356,9 @@ mcm (unsigned int num1, unsigned int num2)
  * @param[in]   size            The number of elements in p_array.
  * @return  Nothing.
  */
-static void
-print_factorization (unsigned int * p_array[2], unsigned int size)
+inline void
+fract_t::fract_t::print_factorization (unsigned int * p_array[2],
+                                       unsigned int size)
 {
     if ((NULL != p_array[0]) && (NULL != p_array[1]) && (size > 0))
     {
@@ -204,7 +371,7 @@ print_factorization (unsigned int * p_array[2], unsigned int size)
                       << *(p_array[1] + idx) << '\n';
         } 
     }
-}   /* print_factorization() */
+}   /* fract_t::fract_t::print_factorization() */
 
 /**
  * @brief   Factorization of a given number
@@ -219,10 +386,10 @@ print_factorization (unsigned int * p_array[2], unsigned int size)
  * @attention   The user must free the memory.
  * @return  1 if an error occourred, 0 otherwise.
  */
-static unsigned int
-factorization (unsigned int num,
-               unsigned int * p_list[2],
-               unsigned int &p_n_elem)
+inline unsigned int
+fract_t::fract_t::factorization (unsigned int num,
+                                 unsigned int * p_list[2],
+                                 unsigned int& p_n_elem)
 {
     unsigned int ret(0);
     p_n_elem = 0;
@@ -291,11 +458,15 @@ factorization (unsigned int num,
                     if (scan == n_elem)
                     {
                         n_elem += 10;
-                        p_list[0] = (unsigned int *) realloc(p_list[0], n_elem * sizeof(unsigned int));
+                        p_list[0] = (unsigned int *) realloc(
+                                                p_list[0],
+                                                n_elem * sizeof(unsigned int));
 
                         if (NULL != p_list[0])
                         {
-                            p_list[1] = (unsigned int *) realloc(p_list[1], n_elem * sizeof(unsigned int));
+                            p_list[1] = (unsigned int *) realloc(
+                                                p_list[1],
+                                                n_elem * sizeof(unsigned int));
 
                             if (NULL == p_list[0])
                             {
@@ -330,7 +501,7 @@ factorization (unsigned int num,
     }
 
     return ret;
-}   /* factorization() */
+}   /* fract_t::fract_t::factorization() */
 
 /**
  * @brief   Tells if a number is prime
@@ -339,8 +510,8 @@ factorization (unsigned int num,
  * @param[in]   num    The integer number.
  * @return  true if is prime, false otherwise.
  */
-static bool
-is_prime_number (unsigned int num)
+inline bool
+fract_t::fract_t::is_prime_number (unsigned int num)
 {
     unsigned int scan(0);
     bool is_prime(true);
@@ -355,7 +526,118 @@ is_prime_number (unsigned int num)
     }
 
     return is_prime;
-}   /* is_prime_number() */
+}   /* fract_t::fract_t::is_prime_number() */
+
+/**
+ * @brief   Check if the string containts a fraction
+ * @par     Description
+ * The function verifies if the given string is composed by a fraction between
+ * two integer numbers (e.g. 13/4, 2/9).
+ * @param[in]   in_str      The string containing a fraction.
+ * @return  true if it is a valid fraction, false otherwise.
+ */
+inline bool
+fract_t::fract_t::check_if_frac (std::string in_str)
+{
+    bool ret(true);
+    long unsigned int idx(0);
+    int cnt(0);
+
+    if ('-' == in_str.at(0))
+    {
+        ++idx;
+    }
+
+    for (; (idx < in_str.length()) && (true == ret); ++idx)
+    {
+        switch (cnt)
+        {
+            case 0:
+                if (0 == isdigit(in_str.at(idx)))
+                {
+                    ret = false;
+                }
+                else
+                {
+                    ++cnt;
+                }
+            break;
+
+            case 1:
+                if (0 == isdigit(in_str.at(idx)))
+                {
+                    if ('/' == in_str.at(idx))
+                    {
+                        ++cnt;
+                    }
+                    else
+                    {
+                        ret = false;
+                    }
+                }
+            break;
+
+            case 2:
+                if ('-' == in_str.at(idx))
+                {
+                    ++idx;
+                }
+
+                if (0 == isdigit(in_str.at(idx)))
+                {
+                    ret = false;
+                }
+            break;
+
+            default:
+            break;
+        }
+    }
+
+    if (2 != cnt)
+    {
+        ret = false;
+    }
+
+    return ret;
+}   /* fract_t::fract_t::check_if_frac() */
+
+/**
+ * @brief   Extraction of numerator and denominator from a string.
+ * @par     Description
+ * The function extract the numerator and denominator from the input string.
+ * @param[in]   in_str  String with the fraction in the form of A/B.
+ * @param[out]  num     The numerator A.
+ * @param[out]  den     The denominator B.
+ * @return  0 if the fraction is valid, 1 if denominator is zero.
+ */
+inline int
+fract_t::fract_t::extract_frac (std::string in_str,
+                                int& num,
+                                int& den)
+{
+    std::string delim = "/";
+    std::string token = in_str.substr(0, in_str.find(delim));
+    int ret(0);
+
+    num = stoi(token);
+
+    token = in_str.substr(token.length() + 1, in_str.length());
+
+    den = stoi(token);
+
+    if (0 == num)
+    {
+        den = 1;
+    }
+
+    if (0 == den)
+    {
+        ret = 1;
+    }
+
+    return ret;
+}   /* fract_t::fract_t::extract_frac() */
 
 
 /*** End of file ***/

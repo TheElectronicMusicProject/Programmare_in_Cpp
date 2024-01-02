@@ -2,7 +2,7 @@
  * @file    main.cpp
  * @author  Filippo Graziani
  * @date    17/09/2023
- * @brief   Simple program to manage a FIFO queue.
+ * @brief   Simple program to manage a custom queue.
  */
 
 #include <iostream>
