@@ -2,7 +2,8 @@
  * @file    main.cpp
  * @author  Filippo Graziani
  * @date    29/12/2023
- * @brief   Test for the class fixed_pt.
+ * @brief   Class used to manage fractions such as 1/3, with sum, substract,
+ *          multiplication and division operators.
  */
 
 #include <iostream>
