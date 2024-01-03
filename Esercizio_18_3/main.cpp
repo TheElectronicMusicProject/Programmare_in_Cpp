@@ -9,8 +9,6 @@
  */
 
 #include <iostream>
-#include <ctype.h>
-#include <string>
 
 namespace sparse_t
 {
