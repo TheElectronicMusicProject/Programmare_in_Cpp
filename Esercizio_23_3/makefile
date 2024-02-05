@@ -6,19 +6,19 @@
 #
 CC=g++
 CFLAGS=-g -Wall -Wextra
-SRC=ia.cpp main.cpp
-OBJ=ia.o main.o
+SRC=lookup.cpp main.cpp
+OBJ=lookup.o main.o
 
 all: main
 
 main: $(OBJ)
 	$(CC) $(CFLAGS) -o main $(OBJ)
 
-main.o: ia.h main.cpp
+main.o: lookup.h main.cpp
 	$(CC) $(CFLAGS) -c main.cpp
 
-ia.o: ia.h ia.cpp
-	$(CC) $(CFLAGS) -c ia.cpp
+lookup.o: lookup.h lookup.cpp
+	$(CC) $(CFLAGS) -c lookup.cpp
 	
 clean:
-	rm -f main io.o hist.o
+	rm -f main io.o lookup.o

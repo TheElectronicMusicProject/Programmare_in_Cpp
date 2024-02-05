@@ -6,19 +6,19 @@
 #
 CC=g++
 CFLAGS=-g -Wall -Wextra
-SRC=ia.cpp main.cpp
-OBJ=ia.o main.o
+SRC=file_style.cpp main.cpp
+OBJ=file_style.o main.o
 
 all: main
 
 main: $(OBJ)
 	$(CC) $(CFLAGS) -o main $(OBJ)
 
-main.o: ia.h main.cpp
+main.o: file_style.h main.cpp
 	$(CC) $(CFLAGS) -c main.cpp
 
-ia.o: ia.h ia.cpp
-	$(CC) $(CFLAGS) -c ia.cpp
+file_style.o: file_style.h file_style.cpp
+	$(CC) $(CFLAGS) -c file_style.cpp
 	
 clean:
-	rm -f main io.o hist.o
+	rm -f main io.o file_style.o

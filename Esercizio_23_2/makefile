@@ -6,19 +6,19 @@
 #
 CC=g++
 CFLAGS=-g -Wall -Wextra
-SRC=ia.cpp main.cpp
-OBJ=ia.o main.o
+SRC=search_open.cpp main.cpp
+OBJ=search_open.o main.o
 
 all: main
 
 main: $(OBJ)
 	$(CC) $(CFLAGS) -o main $(OBJ)
 
-main.o: ia.h main.cpp
+main.o: search_open.h main.cpp
 	$(CC) $(CFLAGS) -c main.cpp
 
-ia.o: ia.h ia.cpp
-	$(CC) $(CFLAGS) -c ia.cpp
+search_open.o: search_open.h search_open.cpp
+	$(CC) $(CFLAGS) -c search_open.cpp
 	
 clean:
-	rm -f main io.o hist.o
+	rm -f main io.o search_open.o

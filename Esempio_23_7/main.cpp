@@ -71,7 +71,7 @@ main (int argc, char * argv[])
     print_histogram();
 
     return (0);
-}
+}   /* main() */
 
 static void
 read_data (const char * const p_name)
