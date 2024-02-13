@@ -185,7 +185,7 @@ class_stuff_t::print_grades ()
         grades::const_iterator cur_grade;
 
         for (cur_grade = roster[*cur_print].begin();
-             cur_grade != roster[*cur_print]. end(); ++cur_grade)
+             cur_grade != roster[*cur_print].end(); ++cur_grade)
         {
             std::cout << *cur_grade << " ";
         }

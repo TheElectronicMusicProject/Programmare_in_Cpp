@@ -1,0 +1,10 @@
+1	hello
+3	quarter
+34	hello
+3	white
+54	nice
+9	kitty
+90	kitty
+76	double
+99  hello
+8   hello
